@@ -1,0 +1,298 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "User API",
+    "description": "This is a documentation of a user controller system.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.example.com/support",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "GeneralError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "admin": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "description": "insert a new user",
+        "operationId": "insert user",
+        "tags": [
+          "users"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "name of the user",
+                    "type": "string"
+                  },
+                  "email": {
+                    "description": "email of the user",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email"
+                ]
+              },
+              "example": {
+                "name": "Pedro Silva",
+                "email": "pedro@silva.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": "19821c18-c61c-4cef-8dee-f912f1b3c809",
+                  "name": "Carlos Borges",
+                  "email": "carlos@borges.com",
+                  "admin": false,
+                  "created_at": "2019-03-28 15:14:19.108116",
+                  "updated_at": "2019-03-28 15:14:19.108116"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro on request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                },
+                "example": {
+                  "error": "email already taken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "description": "change a existent user to admin",
+        "operationId": "admin user",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "ID of user that needs to be change to admin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User changed to admin.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": "19821c18-c61c-4cef-8dee-f912f1b3c809",
+                  "name": "Carlos Borges",
+                  "email": "carlos@borges.com",
+                  "admin": false,
+                  "created_at": "2019-03-28 15:14:19.108116",
+                  "updated_at": "2019-03-28 15:14:19.108116"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro on request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                },
+                "example": {
+                  "error": "user not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "description": "get an user info",
+        "operationId": "get an user",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "ID of user that needs to be found",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User founded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": "19821c18-c61c-4cef-8dee-f912f1b3c809",
+                  "name": "Carlos Borges",
+                  "email": "carlos@borges.com",
+                  "admin": false,
+                  "created_at": "2019-03-28 15:14:19.108116",
+                  "updated_at": "2019-03-28 15:14:19.108116"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro on request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                },
+                "example": {
+                  "error": "user not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/": {
+      "get": {
+        "description": "get all users when is admin",
+        "operationId": "get all users",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "description": "ID of user that will make the request, must to be admin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User founded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "19821c18-c61c-4cef-8dee-f912f1b3c809",
+                    "name": "Carlos Borges",
+                    "email": "carlos@borges.com",
+                    "admin": false,
+                    "created_at": "2019-03-28 15:14:19.108116",
+                    "updated_at": "2019-03-28 15:14:19.108116"
+                  },
+                  {
+                    "id": "19821c18-c61c-4cef-8dee-f912f1b3c809",
+                    "name": "Carlos Borges",
+                    "email": "carlos@borges.com",
+                    "admin": false,
+                    "created_at": "2019-03-28 15:14:19.108116",
+                    "updated_at": "2019-03-28 15:14:19.108116"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Erro on request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralError"
+                },
+                "example": {
+                  "error": "admin user not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

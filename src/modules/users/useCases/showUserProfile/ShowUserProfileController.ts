@@ -1,20 +1,18 @@
+import "reflect-metadata";
 import { Request, Response } from "express";
+import { container } from "tsyringe";
 
 import { ShowUserProfileUseCase } from "./ShowUserProfileUseCase";
 
 class ShowUserProfileController {
-  constructor(private showUserProfileUseCase: ShowUserProfileUseCase) {}
-
-  handle(request: Request, response: Response): Response {
+  async handle(request: Request, response: Response): Promise<Response> {
     const { user_id } = request.params;
 
-    try {
-      const user = this.showUserProfileUseCase.execute({ user_id });
+    const showUserProfileUseCase = container.resolve(ShowUserProfileUseCase);
 
-      return response.status(200).json(user);
-    } catch ({ message }) {
-      return response.status(404).json({ error: message });
-    }
+    const user = await showUserProfileUseCase.execute({ user_id });
+
+    return response.status(200).json(user);
   }
 }
 

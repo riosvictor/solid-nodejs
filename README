@@ -1,0 +1,34 @@
+docker build -t rentx .
+
+docker run -p 3333:3333 rentx
+
+docker-compose up
+docker-compose up -d   -> background
+docker-compose up --force-recreate   -> force recreation image
+
+docker-compose down
+docker-compose start
+docker-compose stop
+
+docker ps
+docker ps -a    -> listar all
+
+docker rm <docker-id or docker-name>
+
+docker start <docker-id or docker-name>
+docker stop <docker-id or docker-name>
+
+
+docker exec -it <docker-name> /bin/bash  -> entrar na raiz do docker
+docker logs <docker-name>
+docker logs <docker-name> -f    -> logs continuos
+
+-> container IP
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <docker name>
+
+docker exec <docker name> cat /etc/hosts
+
+-----
+
+yarn typeorm migration:revert
+yarn typeorm migration:run

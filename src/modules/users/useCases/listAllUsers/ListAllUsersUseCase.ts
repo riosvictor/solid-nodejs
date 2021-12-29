@@ -1,18 +1,25 @@
-import { User } from "../../model/User";
+import { inject, injectable } from "tsyringe";
+
+import { AppError } from "../../../../error/AppError";
+import { User } from "../../entities/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
 interface IRequest {
   user_id: string;
 }
 
+@injectable()
 class ListAllUsersUseCase {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    @inject("UsersRepository")
+    private usersRepository: IUsersRepository
+  ) {}
 
-  execute({ user_id }: IRequest): User[] {
-    const user = this.usersRepository.findById(user_id);
+  async execute({ user_id }: IRequest): Promise<User[]> {
+    const user = await this.usersRepository.findById(user_id);
 
-    if (!user) throw new Error("admin user not found");
-    if (!user.admin) throw new Error("user is not admin");
+    if (!user) throw new AppError("admin user not found", 404);
+    if (!user.admin) throw new AppError("user is not admin");
 
     return this.usersRepository.list();
   }

@@ -1,3 +1,7 @@
+import { User } from "modules/users/entities/User";
+import { container } from "tsyringe";
+import { getRepository } from "typeorm";
+
 import { UsersRepository } from "../../../modules/users/repositories/implementations/UsersRepository";
 import { CreateUserUseCase } from "../../../modules/users/useCases/createUser/CreateUserUseCase";
 
@@ -6,12 +10,15 @@ describe("CreateUserUseCase", () => {
   let usersRepository: UsersRepository;
 
   beforeAll(() => {
-    usersRepository = UsersRepository.getInstance();
-    createUserUseCase = new CreateUserUseCase(usersRepository);
+    createUserUseCase = container.resolve(CreateUserUseCase);
   });
 
-  it("should be able to create new users", () => {
-    const user = createUserUseCase.execute({
+  beforeEach(async () => {
+    await getRepository(User).clear();
+  });
+
+  it("should be able to create new users", async () => {
+    const user = await createUserUseCase.execute({
       name: "Danilo Vieira",
       email: "danilo@rocketseat.com",
     });
@@ -20,8 +27,8 @@ describe("CreateUserUseCase", () => {
   });
 
   it("should not be able to create new users when email is already taken", () => {
-    expect(() => {
-      createUserUseCase.execute({
+    expect(async () => {
+      await createUserUseCase.execute({
         name: "Danilo Vieira",
         email: "danilo@rocketseat.com",
       });

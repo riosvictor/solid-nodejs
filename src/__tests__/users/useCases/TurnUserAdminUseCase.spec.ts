@@ -1,3 +1,5 @@
+import "reflect-metadata";
+import { container } from "tsyringe";
 import { v4 } from "uuid";
 
 import { UsersRepository } from "../../../modules/users/repositories/implementations/UsersRepository";
@@ -8,17 +10,18 @@ describe("TurnUserAdminUseCase", () => {
   let turnUserAdminUseCase: TurnUserAdminUseCase;
 
   beforeAll(() => {
-    usersRepository = UsersRepository.getInstance();
-    turnUserAdminUseCase = new TurnUserAdminUseCase(usersRepository);
+    turnUserAdminUseCase = container.resolve(TurnUserAdminUseCase);
   });
 
-  it("should be able to turn an user as admin", () => {
-    const user = usersRepository.create({
+  it("should be able to turn an user as admin", async () => {
+    const user = await usersRepository.create({
       name: "Joseph Oliveira",
       email: "dogim@rocketseat.com",
     });
 
-    const updatedUser = turnUserAdminUseCase.execute({ user_id: user.id });
+    const updatedUser = await turnUserAdminUseCase.execute({
+      user_id: user.id,
+    });
 
     expect(updatedUser.admin).toBe(true);
     expect(usersRepository.list()).toStrictEqual(
@@ -27,8 +30,8 @@ describe("TurnUserAdminUseCase", () => {
   });
 
   it("should not be able to turn a non existing user as admin", () => {
-    expect(() => {
-      turnUserAdminUseCase.execute({ user_id: v4() });
+    expect(async () => {
+      await turnUserAdminUseCase.execute({ user_id: v4() });
     }).toThrow();
   });
 });

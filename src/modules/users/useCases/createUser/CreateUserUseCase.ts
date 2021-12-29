@@ -1,4 +1,7 @@
-import { User } from "../../model/User";
+import { inject, injectable } from "tsyringe";
+
+import { AppError } from "../../../../error/AppError";
+import { User } from "../../entities/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
 interface IRequest {
@@ -6,13 +9,17 @@ interface IRequest {
   email: string;
 }
 
+@injectable()
 class CreateUserUseCase {
-  constructor(private usersRepository: IUsersRepository) {}
+  constructor(
+    @inject("UsersRepository")
+    private usersRepository: IUsersRepository
+  ) {}
 
-  execute({ email, name }: IRequest): User {
-    const user = this.usersRepository.findByEmail(email);
+  async execute({ email, name }: IRequest): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email);
 
-    if (user) throw new Error("email already taken");
+    if (user) throw new AppError("email already taken");
 
     return this.usersRepository.create({ name, email });
   }

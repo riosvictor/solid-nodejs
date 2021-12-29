@@ -1,20 +1,17 @@
+import "reflect-metadata";
 import { Request, Response } from "express";
+import { container } from "tsyringe";
 
 import { TurnUserAdminUseCase } from "./TurnUserAdminUseCase";
 
 class TurnUserAdminController {
-  constructor(private turnUserAdminUseCase: TurnUserAdminUseCase) {}
-
-  handle(request: Request, response: Response): Response {
+  async handle(request: Request, response: Response): Promise<Response> {
     const { user_id } = request.params;
 
-    try {
-      const user = this.turnUserAdminUseCase.execute({ user_id });
+    const turnUserAdminUseCase = container.resolve(TurnUserAdminUseCase);
+    const user = await turnUserAdminUseCase.execute({ user_id });
 
-      return response.status(200).json(user);
-    } catch ({ message }) {
-      return response.status(404).json({ error: message });
-    }
+    return response.status(200).json(user);
   }
 }
 

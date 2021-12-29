@@ -1,53 +1,42 @@
-import { User } from "../../model/User";
+import { getRepository, Repository } from "typeorm";
+
+import { User } from "../../entities/User";
 import { IUsersRepository, ICreateUserDTO } from "../IUsersRepository";
 
 class UsersRepository implements IUsersRepository {
-  private users: User[];
+  private repository: Repository<User>;
 
-  private static INSTANCE: UsersRepository;
-
-  private constructor() {
-    this.users = [];
+  constructor() {
+    this.repository = getRepository(User);
   }
 
-  public static getInstance(): UsersRepository {
-    if (!UsersRepository.INSTANCE) {
-      UsersRepository.INSTANCE = new UsersRepository();
-    }
+  async create({ name, email }: ICreateUserDTO): Promise<User> {
+    const user = this.repository.create({
+      name,
+      email,
+    });
 
-    return UsersRepository.INSTANCE;
+    return this.repository.save(user);
   }
 
-  create({ name, email }: ICreateUserDTO): User {
-    const user = new User(name, email);
-
-    this.users.push(user);
-
-    return user;
+  async findById(id: string): Promise<User | undefined> {
+    return this.repository.findOne(id);
   }
 
-  findById(id: string): User | undefined {
-    const user = this.users.find((user) => user.id === id);
-
-    return user;
+  async findByEmail(email: string): Promise<User | undefined> {
+    return this.repository.findOne({ email });
   }
 
-  findByEmail(email: string): User | undefined {
-    return this.users.find((user) => user.email === email);
+  async turnAdmin(receivedUser: User): Promise<User> {
+    const user = await this.repository.findOne(receivedUser.id);
+
+    user.admin = true;
+
+    return this.repository.save(user);
   }
 
-  turnAdmin(receivedUser: User): User {
-    const userIndex = this.users.findIndex(
-      (user) => user.id === receivedUser.id
-    );
-
-    if (userIndex > -1) this.users[userIndex].admin = true;
-
-    return this.users[userIndex];
-  }
-
-  list(): User[] {
-    return this.users;
+  async list(): Promise<User[]> {
+    return this.repository.find();
   }
 }
 

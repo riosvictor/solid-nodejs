@@ -1,26 +1,23 @@
 import { Router } from "express";
 
-import { createUserController } from "../modules/users/useCases/createUser";
-import { listAllUsersController } from "../modules/users/useCases/listAllUsers";
-import { showUserProfileController } from "../modules/users/useCases/showUserProfile";
-import { turnUserAdminController } from "../modules/users/useCases/turnUserAdmin";
+import { CreateUserController } from "../modules/users/useCases/createUser/CreateUserController";
+import { ListAllUsersController } from "../modules/users/useCases/listAllUsers/ListAllUsersController";
+import { ShowUserProfileController } from "../modules/users/useCases/showUserProfile/ShowUserProfileController";
+import { TurnUserAdminController } from "../modules/users/useCases/turnUserAdmin/TurnUserAdminController";
 
 const usersRoutes = Router();
 
-usersRoutes.post("/", (request, response) =>
-  createUserController.handle(request, response)
-);
+const createUserController = new CreateUserController();
+const listAllUsersController = new ListAllUsersController();
+const showUserProfileController = new ShowUserProfileController();
+const turnUserAdminController = new TurnUserAdminController();
 
-usersRoutes.patch("/:user_id/admin", (request, response) =>
-  turnUserAdminController.handle(request, response)
-);
+usersRoutes.post("/", createUserController.handle);
 
-usersRoutes.get("/:user_id", (request, response) =>
-  showUserProfileController.handle(request, response)
-);
+usersRoutes.patch("/:user_id/admin", turnUserAdminController.handle);
 
-usersRoutes.get("/", (request, response) =>
-  listAllUsersController.handle(request, response)
-);
+usersRoutes.get("/:user_id", showUserProfileController.handle);
+
+usersRoutes.get("/", listAllUsersController.handle);
 
 export { usersRoutes };

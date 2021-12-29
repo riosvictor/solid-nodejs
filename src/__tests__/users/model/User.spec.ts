@@ -1,6 +1,6 @@
 import { validate } from "uuid";
 
-import { User } from "../../../modules/users/model/User";
+import { User } from "../../../modules/users/entities/User";
 
 describe("User model", () => {
   it("should be able to create an user with all props", () => {
